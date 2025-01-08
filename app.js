@@ -2,6 +2,11 @@ const express = require("express")
 const app = express()
 const port = process.env.PORT || 3000
 
+const movieRouter = require("./routers/movieRouter.js")
+
+//Middlewares
+app.use(express.static("public"))
+app.use("/api/movies", movieRouter)
 
 
 
