@@ -6,6 +6,11 @@ function index(req, res) {
 
     connection.query(sql, (err, results) => {
         if (err) return res.status(500).json({ message: err.message })
+        //riscrivere la proprietà image per far combaciare il path per il forntend
+        results.forEach((movie) => {
+            movie.image = `${process.env.BE_HOST}/images/movies_cover/${movie.image}`
+        })
+
         res.json(results)
     })
 }
