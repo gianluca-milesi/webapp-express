@@ -18,7 +18,15 @@ function index(req, res) {
 //Show
 function show(req, res) {
     const id = req.params.id
-    const sql = `SELECT * FROM movies WHERE id = ?`
+
+    const sql = `
+        SELECT movies.*, AVG(vote) AS avg_vote
+        FROM movies
+        JOIN reviews
+        ON movies.id = reviews.movie_id 
+        WHERE movies.id = ?
+        GROUP BY movies.id;
+    `
 
     connection.query(sql, [id], (err, results) => {
         if (err) return res.status(500).json({ message: err.message })
@@ -30,12 +38,14 @@ function show(req, res) {
 
 
         const movie = results[0]
+        movie.image = `${process.env.BE_HOST}/images/movies_cover/${movie.image}`
 
         const sql = `SELECT * FROM reviews WHERE movie_id = ?`
 
         connection.query(sql, [id], (err, results) => {
             if (err) return res.status(500).json({ message: err.message })
             movie.reviews = results
+
             res.json(movie)
         })
     })
