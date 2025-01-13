@@ -57,8 +57,12 @@ function storeReview(req, res) {
 
     const { name, text, vote } = req.body
 
+    //Gestione errori
+    const intVote = parseInt(vote)
+    if (!name || !intVote || intVote > 5 || intVote < 0) return res.status(400).json({ message: "Invalid data" })
+
     const sql = "INSERT INTO reviews (name, text, vote, movie_id) VALUES (?, ?, ?, ?)"
-    connection.query(sql, [name, text, vote, id], (err, results) => {
+    connection.query(sql, [name, text, intVote, id], (err, results) => {
         if (err) return res.status(500).json({ message: err.message })
         res.status(201).json({ message: "Review added" })
     })
