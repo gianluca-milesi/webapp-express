@@ -14,6 +14,7 @@ app.use(
 const notFound = require("./middlewares/notFound.js")
 const errorsHandler = require('./middlewares/errorsHandler')
 app.use(express.static("public"))
+app.use(express.json())
 
 
 app.get("/", (req, res) => {

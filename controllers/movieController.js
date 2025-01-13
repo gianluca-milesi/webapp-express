@@ -1,9 +1,9 @@
 const connection = require('../data/db.js')
 
+
 //Index
 function index(req, res) {
     const sql = `SELECT * FROM movies`
-
     connection.query(sql, (err, results) => {
         if (err) return res.status(500).json({ message: err.message })
         //riscrivere la proprietà image per far combaciare il path per il forntend
@@ -14,6 +14,7 @@ function index(req, res) {
         res.json(results)
     })
 }
+
 
 //Show
 function show(req, res) {
@@ -27,7 +28,6 @@ function show(req, res) {
         WHERE movies.id = ?
         GROUP BY movies.id;
     `
-
     connection.query(sql, [id], (err, results) => {
         if (err) return res.status(500).json({ message: err.message })
         if (results.length === 0)
@@ -41,7 +41,6 @@ function show(req, res) {
         movie.image = `${process.env.BE_HOST}/images/movies_cover/${movie.image}`
 
         const sql = `SELECT * FROM reviews WHERE movie_id = ?`
-
         connection.query(sql, [id], (err, results) => {
             if (err) return res.status(500).json({ message: err.message })
             movie.reviews = results
@@ -52,4 +51,18 @@ function show(req, res) {
 }
 
 
-module.exports = { index, show }
+//Store
+function storeReview(req, res) {
+    const id = req.params.id
+
+    const { name, text, vote } = req.body
+
+    const sql = "INSERT INTO reviews (name, text, vote, movie_id) VALUES (?, ?, ?, ?)"
+    connection.query(sql, [name, text, vote, id], (err, results) => {
+        if (err) return res.status(500).json({ message: err.message })
+        res.status(201).json({ message: "Review added" })
+    })
+}
+
+
+module.exports = { index, show, storeReview }
